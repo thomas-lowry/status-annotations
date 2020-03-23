@@ -1,0 +1,15 @@
+{
+	"name": "Status Annotations",
+	"id": "795096273369409539",
+	"api": "1.0.0",
+	"main": "code.js",
+	"ui": "index.html",
+	"menu": [
+		{ "command": "status", "name": "Status annotations"},
+		{ "command": "refresh", "name": "Refresh annotations"}
+	],
+	"relaunchButtons": [
+		{"command": "status", "name": "Change status",  "multipleSelection": true},
+		{"command": "refresh", "name": "Refresh status annotations", "multipleSelection": true}
+	]
+}
