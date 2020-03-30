@@ -212,7 +212,7 @@ function clearSelected() {
 			frame.setRelaunchData({ });
 		})
 	} else {
-		figma.notify('Please select a frame with a status.')
+		figma.notify('Please select a frame with a status')
 	}
 }
 
