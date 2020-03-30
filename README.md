@@ -14,6 +14,7 @@ The plugin ships with 5 status annotations:
 The default status annotations may not apply to every team's workflow, so a secondary goal of this plugin was to make it easy to customize with your own annotations. Here is how to get setup.
 
 ### 1. Fork this repository 
+Fork or clone this repository. You can also use the the following command:
 ```bash
 npx degit thomas-lowry/status-annotations my-status-annotations
 ```
