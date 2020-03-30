@@ -37,7 +37,7 @@ import iconStatusA from './assets/icon-status-a.svg';
 import iconStatusB from './assets/icon-status-b.svg';
 ```
 
-Next you need to edit the statuses array. You can add as many as you like, the plugin UI will resize to accommodate the number of statuses that you create. 
+Now that you have your icons imported, you need to edit the statuses array. You can add as many as you like, the plugin UI will resize to accommodate the number of statuses that you create. 
 ```Javascript
 let statuses = [
   {
