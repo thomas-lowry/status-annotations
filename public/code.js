@@ -203,7 +203,7 @@ function deleteSelected() {
             figma.notify('1 annotation removed');
         }
         else if (removeCount > 1) {
-            figma.notify(removeCount + ' annotations removed.');
+            figma.notify(removeCount + ' annotations deleted.');
         }
     }
     else {
@@ -225,7 +225,7 @@ function deleteAll() {
     //remove the plugin relaunch button
     page.setRelaunchData({});
     //notify the user
-    figma.notify('All annotations cleared');
+    figma.notify('All annotations removed');
 }
 //remove the status msg from a frame
 function removeStatus(frame) {

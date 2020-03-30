@@ -212,7 +212,7 @@ function deleteSelected() {
 		if (removeCount === 1) {
 			figma.notify('1 annotation removed')
 		} else if (removeCount > 1) {
-			figma.notify(removeCount + ' annotations removed.')
+			figma.notify(removeCount + ' annotations deleted.')
 		}
 
 	} else {
@@ -239,7 +239,7 @@ function deleteAll() {
 	page.setRelaunchData({ });
 
 	//notify the user
-	figma.notify('All annotations cleared');
+	figma.notify('All annotations removed');
 }
 
 //remove the status msg from a frame
