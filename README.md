@@ -40,13 +40,13 @@ import iconStatusB from './assets/icon-status-b.svg';
 Next you need to edit the statuses array:
 ```Javascript
 let statuses = [
-  {
-    'title': 'Status name A', //this is the name of the status
-		'icon': iconStatusA, //this is the var which contains your SVG icon above
-		'color': '#E93940' //this is the unique color for your annotation
+	{
+  		'title': 'Status name A', //this is the name of the status
+  		'icon': iconStatusA, //this is the var which contains your SVG icon above
+  		'color': '#E93940' //this is the unique color for your annotation
 	},
-  {
-    'title': 'Status name B', //this is the name of the status
+	{
+    	'title': 'Status name B', //this is the name of the status
 		'icon': iconStatusB, //this is the var which contains your SVG icon above
 		'color': '#E93940' //this is the unique color for your annotation
 	}
