@@ -176,6 +176,7 @@ async function createAnnotations(status) {
 			let annotationGroup = page.findOne(x => x.type === 'GROUP' && x.name === 'status_annotations') as GroupNode;
 			if (annotationGroup) {
 				annotationGroup.appendChild(statusAnnotation);
+				annotationGroup.parent.insertChild(0, annotationGroup);
 			} else {
 				let annotationsToGroup = [];
 				annotationsToGroup.push(statusAnnotation);
@@ -183,6 +184,7 @@ async function createAnnotations(status) {
 				newAnnotationGroup.name = 'status_annotations';
 				newAnnotationGroup.locked = true;
 				newAnnotationGroup.expanded = false;
+				newAnnotationGroup.parent.insertChild(0, newAnnotationGroup);
 			}
 
 			//set plugin relaunch data
@@ -212,7 +214,7 @@ function deleteSelected() {
 		if (removeCount === 1) {
 			figma.notify('1 annotation removed')
 		} else if (removeCount > 1) {
-			figma.notify(removeCount + ' annotations deleted.')
+			figma.notify(removeCount + ' annotations removed')
 		}
 
 	} else {
@@ -284,11 +286,16 @@ function cleanUp() {
 				updateCount++
 			}
 		});
+
+		//talk to the user
 		if (updateCount === 1) {
 			figma.notify('1 annotation updated')
 		} else if (updateCount > 1) {
 			figma.notify(updateCount + ' annotations updated')
 		}
+
+		//move the annotations to the bottom
+		annotationGroup.parent.insertChild(0, annotationGroup);
 	}
 	updateCount = 0;
 }
