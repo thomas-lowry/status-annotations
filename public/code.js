@@ -26,7 +26,7 @@ function __awaiter(thisArg, _arguments, P, generator) {
 }
 
 //vars
-let uiWidth = 172; // default ui width
+let uiWidth = 184; // default ui width
 let uiHeight = 210; // default ui height
 let spacing = 8; // spacing of annotations from top of frame
 let page = figma.currentPage;

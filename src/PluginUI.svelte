@@ -4,7 +4,7 @@
 	import { GlobalCSS } from 'figma-plugin-ds-svelte';
 
 	//import some Svelte Figma UI components
-	import { Button, IconButton, IconSwap } from 'figma-plugin-ds-svelte';
+	import { Button, IconButton, IconSwap, Type } from 'figma-plugin-ds-svelte';
 	import StatusButton from './components/StatusButton';
 
 	//import all of your svg icons here (12x12 size)
@@ -43,6 +43,8 @@
 		},
 	];
 
+	let showDialog = false; // confirmation dialog visibility
+
 	//determine how tall the plugin UI needs to be
 	//the number 50 accoutns for clear/clear all buttons, the divider, and some padding
 	//could caluclate this with height of dom elements, but this seems faster
@@ -50,17 +52,28 @@
 	parent.postMessage({ pluginMessage: { 'type': 'height', 'height': height } }, '*');
 
 
-
+	// adds the status msg to selected frames
 	function addStatus(status) {
 		parent.postMessage({ pluginMessage: { 'type': 'addStatus', 'status': status } }, '*');
 	}
 
-	function clearSelected() {
+	function toggleDeleteConfirmation() {
+		if (showDialog) {
+			showDialog = false;
+		} else {
+			showDialog = true;
+		}
+	}
+	
+
+
+	function remove() {
 		parent.postMessage({ pluginMessage: { 'type': 'clear' } }, '*');
 	}
 
-	function clearAll() {
-		parent.postMessage({ pluginMessage: { 'type': 'clearAll' } }, '*');
+	function removeAll() {
+		parent.postMessage({ pluginMessage: { 'type': 'removeAll' } }, '*');
+		toggleDeleteConfirmation();
 	}
 
 	function refresh() {
@@ -69,35 +82,44 @@
 
 </script>
 
-<div class="wrapper">
-
-	<div class="annotation-buttons">
-
-		<!-- Status annotation buttons -->
-		{#each statuses as status}
-			<StatusButton on:click={() => addStatus(status)} icon={status.icon} color={status.color}>{status.title}</StatusButton>
-		{/each}
-
-	</div>
-
-	<div class="flex row justify-content-between align-items-center pr-xxsmall">
-		<!-- Clear buttons -->
-		<div class="flex row clear">
-			<Button on:click={clearSelected} variant="tertiary" class="mr-xxsmall">Clear</Button>
-			<Button on:click={clearAll} variant="tertiary" destructive>Clear all</Button>
+<!-- Confirmation dialog -->
+<div class="confirmation p-xsmall" class:showDialog={showDialog === true}>
+	<div class="confirmation__wrapper flex column">
+		<!-- Message -->
+		<div class="confirmation--msg">
+			<Type weight="bold" class="mb-xsmall">Delete annotations</Type>
+			<Type class="mb-xxsmall">This action will remove all status annotations on the current page.</Type>
 		</div>
-		<!-- refresh icon -->
-		<IconButton on:click={refresh} iconName={IconSwap}></IconButton>
+		<!-- Buttons -->
+		<div class="flex row">
+			<Button on:click={toggleDeleteConfirmation} variant="secondary" class="mr-xxsmall">Cancel</Button>
+			<Button on:click={removeAll} variant="primary" destructive>Delete</Button>
+		</div>
 	</div>
+</div>
+
+<div class="annotation-buttons">
+
+	<!-- Status annotation buttons -->
+	{#each statuses as status}
+		<StatusButton on:click={() => addStatus(status)} icon={status.icon} color={status.color}>{status.title}</StatusButton>
+	{/each}
+
+</div>
+
+<div class="flex row justify-content-between align-items-center pr-xxsmall">
+	<!-- Clear buttons -->
+	<div class="flex row clear">
+		<Button on:click={remove} variant="tertiary" class="mr-xxsmall">Delete</Button>
+		<Button on:click={toggleDeleteConfirmation} variant="tertiary" destructive>Delete all</Button>
+	</div>
+	<!-- refresh icon -->
+	<IconButton on:click={refresh} iconName={IconSwap}></IconButton>
 </div>
 
 
 
 <style>
-
-.wrapper {
-	overflow: hidden;
-}
 
 .annotation-buttons {
 	padding: 4px 0 4px 0;
@@ -107,4 +129,30 @@
 .clear {
 	padding: 4px 16px 4px 16px;
 }
+
+.confirmation {
+	position: absolute;
+	top: 101%;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 100;
+	background-color: var(--white);
+	transition-property: top;
+	transition-timing-function: ease-in-out;
+	transition-duration: 300ms;
+	border-top: 1px solid var(--black3);
+}
+.confirmation--msg {
+	flex: 1;
+	user-select: none;
+}
+.confirmation__wrapper {
+	height: 100%;
+}
+.showDialog {
+	top: -1px;
+}
+
+
 </style>
