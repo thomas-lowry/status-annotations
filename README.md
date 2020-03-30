@@ -1,49 +1,66 @@
-# Figsvelte
-A boilerplate for creating Figma plugins using Svelte.
+![Status Annotations Promo Image](/promo/github.png?raw=true "Status Annotations promo")
 
-This starter project has everything you need to start developing a Figma plugin usign Svelte. Your JS, CSS, SVG and image assets can be bundled on build. The package will take care of compiling your typescript + app on save during development, and also minify on build. 
+# Status annotations
+A Figma plugin for adding a status annotations to your frames.
 
-Additionally, this package comes preconfigured with [Figma Plugin DS Svelte](https://github.com/thomas-lowry/figma-plugin-ds-svelte) where you have access to a large range of components and icons that match the Figma UI, to get you up and running quickly. Note: installing this boilerplate will install the component library as a dependency.
+The plugin ships with 5 status annotations:
+1. In progress (for early explorations, or work in progress designs)
+2. Review (needs review from a stakeholder or in a design crit)
+3. Approved (design direction is approved, but may need minor tightening/tweaks for developers)
+4. Develop (ready for developers to implement)
+5. Complete (the design has been build and shipped)
 
-Only what you import/use will be included in the final build for small bundle size.
+## Forking your own version
+The default status annotations may not apply to every team's workflow, so a secondary goal of this plugin was to make it easy to customize with your own annotations. Here is how to get setup.
 
-
-## To get started
+### 1. Fork this repository 
 ```bash
-npx degit thomas-lowry/figsvelte figma-plugin
-cd figma-plugin
+npx degit thomas-lowry/status-annotations my-status-annotations
+```
+
+### 2. Install
+```bash
 npm install
 ```
-_Note that you will need to have [Node.js](https://nodejs.org/) installed._
 
-
-## Development
-During development, watch your project for changes with the following command.
-
+### 3. Develop
 ```bash
 npm run dev
 ```
-Start building your plugin UI in `'src/Plugin.svelte'`.
 
+### 4. Customize
+The plugin UI is built using Svelte for the UI, but if you aren't familiar with Svelte, there isn't much you have to know or do! To start configuring the annotations, open `PluginUI.svelte` in your code editor.
 
-## Build
-When ready to package up your final Figma Plugin:
+First you will need to import your SVG icons. You can save them to the `src/assets` directory. I have designed each icon on a 12×12 frame.
+```Javascript
+import iconStatusA from './assets/icon-status-a.svg';
+import iconStatusB from './assets/icon-status-b.svg';
+```
+
+Next you need to edit the statuses array. You can add as many as you like, the plugin UI will resize to accommodate the number of statuses that you create. 
+```Javascript
+let statuses = [
+  {
+    'title': 'Status name A', //this is the name of the status
+    'icon': iconStatusA, //this is the var which contains your SVG icon above
+    'color': '#E93940' //this is the unique color for your annotation
+  },
+  {
+    'title': 'Status name B', //this is the name of the status
+    'icon': iconStatusB, //this is the var which contains your SVG icon above
+    'color': '#E93940' //this is the unique color for your annotation
+  }
+];
+```
+
+### 5. Build
+Next, you can build your plugin for use in production.
 ```bash
 npm run build
 ```
 
+### 6. Add to Figma
+Lastly, you need to add your plugin to Figma. From your list of plugins, under the "In Development" header, choose "Create new Plugin" by clicking the + button. From here you want to point to the `public/manifest.json` file in your plugin directory. You can now run the plugin and test it out.
 
-## Useful info
-To include an external CSS file:
-```javascript
-import styles from './styles.css';
-```
-
-To include an SVG:
-```javascript
-import SvgName from './image.svg';
-
-//use in your markup
-{@html SvgName}
-```
-_For more info on using the Icon component system with SVGs from [Figma Plugin DS Svelte](https://github.com/thomas-lowry/figma-plugin-ds-svelte), refer to the repo._
+### 7. Publish privately (optional)
+If you are part of a Figma Organization tier-plan, you can publish the plugin privately for use on your team. For more details on how to do this, visit the [Manage Plugins in an Organization](https://help.figma.com/hc/en-us/articles/360039958894-Manage-Plugins-in-an-Organization) page on Figma's help centre.
