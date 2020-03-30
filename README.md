@@ -37,7 +37,7 @@ import iconStatusA from './assets/icon-status-a.svg';
 import iconStatusB from './assets/icon-status-b.svg';
 ```
 
-Next you need to edit the statuses array:
+Next you need to edit the statuses array. You can add as many as you like, the plugin UI will resize to accommodate the number of statuses that you create. 
 ```Javascript
 let statuses = [
   {
@@ -50,6 +50,7 @@ let statuses = [
     'icon': iconStatusB, //this is the var which contains your SVG icon above
     'color': '#E93940' //this is the unique color for your annotation
   }
+];
 ```
 
 ### 5. Build
