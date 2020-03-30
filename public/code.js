@@ -30,6 +30,8 @@ let uiWidth = 184; // default ui width
 let uiHeight = 210; // default ui height
 let spacing = 8; // spacing of annotations from top of frame
 let page = figma.currentPage;
+let updateCount = 0;
+let removeCount = 0;
 cleanUp();
 if (figma.command === 'refresh') {
     cleanUp();
@@ -50,11 +52,11 @@ figma.ui.onmessage = msg => {
             let status = msg.status;
             createAnnotations(status);
             break;
-        case 'clear':
-            clearSelected();
+        case 'delete':
+            deleteSelected();
             break;
-        case 'clearAll':
-            clearAll();
+        case 'deleteAll':
+            deleteAll();
             break;
         case 'refresh':
             cleanUp();
@@ -190,20 +192,27 @@ function createAnnotations(status) {
     });
 }
 //clears the status on selected frames
-function clearSelected() {
+function deleteSelected() {
     let selection = getFramesInSelection();
-    if (selection) {
+    if (selection.length !== 0) {
         selection.forEach(frame => {
             removeStatus(frame);
             frame.setRelaunchData({});
         });
+        if (removeCount === 1) {
+            figma.notify('1 annotation removed');
+        }
+        else if (removeCount > 1) {
+            figma.notify(removeCount + ' annotations removed.');
+        }
     }
     else {
         figma.notify('Please select a frame with a status');
     }
+    removeCount = 0;
 }
 //clear all annotations
-function clearAll() {
+function deleteAll() {
     let annotationGroup = page.findOne(x => x.type === 'GROUP' && x.name === 'status_annotations');
     if (annotationGroup) {
         annotationGroup.remove();
@@ -215,6 +224,8 @@ function clearAll() {
     });
     //remove the plugin relaunch button
     page.setRelaunchData({});
+    //notify the user
+    figma.notify('All annotations cleared');
 }
 //remove the status msg from a frame
 function removeStatus(frame) {
@@ -227,6 +238,7 @@ function removeStatus(frame) {
             let refId = annotation.getPluginData('frameId');
             if (targetId === refId) {
                 annotation.remove();
+                removeCount++;
             }
         });
     }
@@ -241,14 +253,25 @@ function cleanUp() {
             if (frame) {
                 let y = frame.y - annotation.height - spacing;
                 let x = (frame.x + frame.width) - annotation.width;
+                if (annotation.x != x && annotation.y != y) {
+                    updateCount++;
+                }
                 annotation.x = x;
                 annotation.y = y;
             }
             else {
                 annotation.remove();
+                updateCount++;
             }
         });
+        if (updateCount === 1) {
+            figma.notify('1 annotation updated');
+        }
+        else if (updateCount > 1) {
+            figma.notify(updateCount + ' annotations updated');
+        }
     }
+    updateCount = 0;
 }
 //Helper Functions
 //hex to figma color system

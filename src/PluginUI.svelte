@@ -57,6 +57,7 @@
 		parent.postMessage({ pluginMessage: { 'type': 'addStatus', 'status': status } }, '*');
 	}
 
+	//open the delete confirmation modal
 	function toggleDeleteConfirmation() {
 		if (showDialog) {
 			showDialog = false;
@@ -66,16 +67,18 @@
 	}
 	
 
-
-	function remove() {
-		parent.postMessage({ pluginMessage: { 'type': 'clear' } }, '*');
+	//delete the annotations from selected frames
+	function deleteSeletected() {
+		parent.postMessage({ pluginMessage: { 'type': 'delete' } }, '*');
 	}
 
-	function removeAll() {
-		parent.postMessage({ pluginMessage: { 'type': 'removeAll' } }, '*');
+	//delete all of the annotations on the current page
+	function deleteAll() {
+		parent.postMessage({ pluginMessage: { 'type': 'deleteAll' } }, '*');
 		toggleDeleteConfirmation();
 	}
 
+	//refresh the positions of annotations (and remove any that belong to frames that don't exist)
 	function refresh() {
 		parent.postMessage({ pluginMessage: { 'type': 'refresh' } }, '*');
 	}
@@ -93,7 +96,7 @@
 		<!-- Buttons -->
 		<div class="flex row">
 			<Button on:click={toggleDeleteConfirmation} variant="secondary" class="mr-xxsmall">Cancel</Button>
-			<Button on:click={removeAll} variant="primary" destructive>Delete</Button>
+			<Button on:click={deleteAll} variant="primary" destructive>Delete</Button>
 		</div>
 	</div>
 </div>
@@ -110,7 +113,7 @@
 <div class="flex row justify-content-between align-items-center pr-xxsmall">
 	<!-- Clear buttons -->
 	<div class="flex row clear">
-		<Button on:click={remove} variant="tertiary" class="mr-xxsmall">Delete</Button>
+		<Button on:click={deleteSeletected} variant="tertiary" class="mr-xxsmall">Delete</Button>
 		<Button on:click={toggleDeleteConfirmation} variant="tertiary" destructive>Delete all</Button>
 	</div>
 	<!-- refresh icon -->
