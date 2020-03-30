@@ -7,15 +7,11 @@ let page = figma.currentPage;
 cleanUp();
 
 if (figma.command === 'refresh') {
-
 	cleanUp();
 	figma.closePlugin();
-
 } else {
-
 	//show the UI of the plugin
 	figma.showUI(__html__, {width: uiWidth, height: uiHeight });
-
 }
 
 //recieves msgs from the UI

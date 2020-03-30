@@ -71,23 +71,24 @@
 
 <div class="wrapper">
 
-	{#each statuses as status}
-		<StatusButton on:click={() => addStatus(status)} icon={status.icon} color={status.color}>{status.title}</StatusButton>
-	{/each}
+	<div class="annotation-buttons">
 
-</div>
+		<!-- Status annotation buttons -->
+		{#each statuses as status}
+			<StatusButton on:click={() => addStatus(status)} icon={status.icon} color={status.color}>{status.title}</StatusButton>
+		{/each}
 
-<div class="flex row justify-content-between align-items-center pr-xxsmall">
-
-	<!-- Clear buttons -->
-	<div class="flex row clear">
-		<Button on:click={clearSelected} variant="tertiary" class="mr-xxsmall">Clear</Button>
-		<Button on:click={clearAll} variant="tertiary" destructive>Clear all</Button>
 	</div>
 
-	<!-- refresh icon -->
-	<IconButton on:click={refresh} iconName={IconSwap}></IconButton>
-
+	<div class="flex row justify-content-between align-items-center pr-xxsmall">
+		<!-- Clear buttons -->
+		<div class="flex row clear">
+			<Button on:click={clearSelected} variant="tertiary" class="mr-xxsmall">Clear</Button>
+			<Button on:click={clearAll} variant="tertiary" destructive>Clear all</Button>
+		</div>
+		<!-- refresh icon -->
+		<IconButton on:click={refresh} iconName={IconSwap}></IconButton>
+	</div>
 </div>
 
 
@@ -95,6 +96,10 @@
 <style>
 
 .wrapper {
+	overflow: hidden;
+}
+
+.annotation-buttons {
 	padding: 4px 0 4px 0;
 	border-bottom: 1px solid var(--black1);
 }
