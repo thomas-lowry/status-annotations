@@ -4,16 +4,17 @@
 A Figma plugin for adding a status annotations to your frames.
 
 The plugin ships with 5 status annotations:
-1. In progress (for early explorations, or work in progress designs)
-2. Review (needs review from a stakeholder or in a design crit)
-3. Approved (design direction is approved, but may need minor tightening/tweaks for developers)
-4. Develop (ready for developers to implement)
-5. Complete (the design has been build and shipped)
+1. In progress — _For early explorations, or work in progress designs_
+2. Review — _Needs review from a stakeholder or in a design crit_
+3. Approved — _Design direction is approved, but may need minor tightening/tweaks for developers_
+4. Develop — _Ready for developers to implement_
+5. Complete — _design has been build and shipped_
 
 ## Forking your own version
 The default status annotations may not apply to every team's workflow, so a secondary goal of this plugin was to make it easy to customize with your own annotations. Here is how to get setup.
 
 ### 1. Fork this repository 
+Fork or clone this repository. You can also use the the following command:
 ```bash
 npx degit thomas-lowry/status-annotations my-status-annotations
 ```
@@ -37,7 +38,7 @@ import iconStatusA from './assets/icon-status-a.svg';
 import iconStatusB from './assets/icon-status-b.svg';
 ```
 
-Next you need to edit the statuses array. You can add as many as you like, the plugin UI will resize to accommodate the number of statuses that you create. 
+Now that you have your icons imported, you need to edit the statuses array. You can add as many as you like, the plugin UI will resize to accommodate the number of statuses that you create. 
 ```Javascript
 let statuses = [
   {
