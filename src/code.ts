@@ -56,7 +56,7 @@ function getFramesInSelection() {
 	let framesInSelection = [];
 	if (selection) {
 		selection.forEach(node => {
-			if (node.type === 'FRAME') {
+			if (node.type === 'FRAME' && node.parent === page) {
 				framesInSelection.push(node);
 			}
 		})
@@ -199,7 +199,7 @@ async function createAnnotations(status) {
 		});
 
 	} else {
-		figma.notify('Please select a frame');
+		figma.notify('Please select a top-level frame');
 	}
 }
 
