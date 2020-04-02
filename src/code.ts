@@ -51,23 +51,25 @@ figma.ui.onmessage = msg => {
 
 
 //function to get frames within the selection
-function getFramesInSelection() {
-	let selection = page.selection;
-	let framesInSelection = [];
-	if (selection) {
-		selection.forEach(node => {
-			if (node.type === 'FRAME' && node.parent === page) {
-				framesInSelection.push(node);
+function getTopLevelNodes(nodes) {
+	let topLevelNodesInSelection = [];
+	if (nodes) {
+		nodes.forEach(node => {
+			if (node.parent === page) {
+				if (node.type === 'COMPONENT' || node.type === 'FRAME' || node.type === 'INSTANCE' || node.type === 'GROUP') {
+					topLevelNodesInSelection.push(node);
+					console.log(topLevelNodesInSelection)
+				}
 			}
-		})
+		});
 	}
-	return framesInSelection as FrameNode[];
+	return topLevelNodesInSelection as SceneNode[];
 }
 
 //create specified annotation
 async function createAnnotations(status) {
 
-	let selection:FrameNode[] = getFramesInSelection();
+	let selection:SceneNode[] = getTopLevelNodes(figma.currentPage.selection);
 
 	if (selection.length !== 0) {
 
@@ -146,12 +148,12 @@ async function createAnnotations(status) {
 		}];
 
 		//loop through each frame
-		selection.forEach(frame => {
+		selection.forEach(node => {
 
 			let statusAnnotation;
 
 			//remove existing status if there is one
-			removeStatus(frame);
+			removeStatus(node);
 			
 			//check to see if first annotation
 			if (count === 0) {
@@ -161,16 +163,16 @@ async function createAnnotations(status) {
 			}
 
 			//get the frame id
-			let frameId:string = frame.id;
+			let nodeId:string = node.id;
 
 			//set the position of the annotation
-			let y = frame.y - statusAnnotation.height - spacing;
-			let x = (frame.x + frame.width) - statusAnnotation.width;
+			let y = node.y - statusAnnotation.height - spacing;
+			let x = (node.x + node.width) - statusAnnotation.width;
 			statusAnnotation.x = x;
 			statusAnnotation.y = y;
 
 			//add meta data to the annotation
-			statusAnnotation.setPluginData('frameId',frameId);
+			statusAnnotation.setPluginData('frameId',nodeId);
 
 			//add to group with annotations or create one
 			let annotationGroup = page.findOne(x => x.type === 'GROUP' && x.name === 'status_annotations') as GroupNode;
@@ -188,8 +190,10 @@ async function createAnnotations(status) {
 			}
 
 			//set plugin relaunch data
-			frame.setRelaunchData({ status: status.title });
-			frame.setSharedPluginData('statusannotations', 'status', status.title);
+			if (node.type != 'INSTANCE') {
+				node.setRelaunchData({ status: status.title });
+			}
+			node.setSharedPluginData('statusannotations', 'status', status.title);
 
 			//add plugin relaunch data to the page
 			page.setRelaunchData({ refresh: '' });
@@ -199,17 +203,19 @@ async function createAnnotations(status) {
 		});
 
 	} else {
-		figma.notify('Please select a top-level frame');
+		figma.notify('Please select a top level frame, component, or group');
 	}
 }
 
 //clears the status on selected frames
 function deleteSelected() {
-	let selection:FrameNode[] = getFramesInSelection();
+	let selection:SceneNode[] = getTopLevelNodes(figma.currentPage.selection);
 	if (selection.length !== 0) {
-		selection.forEach(frame => {
-			removeStatus(frame);
-			frame.setRelaunchData({ });
+		selection.forEach(node => {
+			removeStatus(node);
+			if (node.type != 'INSTANCE') {
+				node.setRelaunchData({ });
+			}
 		});
 		if (removeCount === 1) {
 			figma.notify('1 annotation removed')
@@ -218,7 +224,7 @@ function deleteSelected() {
 		}
 
 	} else {
-		figma.notify('Please select a frame with a status')
+		figma.notify('Please select a frame, component, or group with a status')
 	}
 	removeCount = 0;
 }
@@ -232,9 +238,11 @@ function deleteAll() {
 	}
 
 	//need to make this more performant
-	let frames = page.findAll(x => x.type === 'FRAME') as FrameNode[];
-	frames.forEach(frame => {
-		frame.setRelaunchData({ });
+	let topLevelNodes:SceneNode[] = getTopLevelNodes(figma.currentPage.children);
+	topLevelNodes.forEach(node => {
+		if (node.type != 'INSTANCE') {
+			node.setRelaunchData({ });
+		}
 	})
 
 	//remove the plugin relaunch button
@@ -250,7 +258,7 @@ function removeStatus(frame) {
 	let targetId = frame.id;
 	let annotationGroup = page.findOne(x => x.type === 'GROUP' && x.name === 'status_annotations') as GroupNode;
 
-	//remove shared plugin data
+	//remove shared plugin data`
 	frame.setSharedPluginData('statusannotations', 'status', '');
 
 	if (annotationGroup) {
@@ -270,10 +278,10 @@ function cleanUp() {
 	if (annotationGroup) {
 		annotationGroup.children.forEach(annotation => {
 			let refId = annotation.getPluginData('frameId');
-			let frame = figma.getNodeById(refId) as FrameNode;
-			if (frame) {
-				let y = frame.y - annotation.height - spacing;
-				let x = (frame.x + frame.width) - annotation.width;
+			let node = figma.getNodeById(refId) as SceneNode;
+			if (node) {
+				let y = node.y - annotation.height - spacing;
+				let x = (node.x + node.width) - annotation.width;
 
 				if (annotation.x != x && annotation.y != y) {
 					updateCount++
