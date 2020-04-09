@@ -13,6 +13,7 @@
     import iconApproved from './assets/icon-approved.svg';
     import iconDevelop from './assets/icon-develop.svg';
 	import iconComplete from './assets/icon-complete.svg';
+	import iconArchive from './assets/icon-archive.svg';
 	
 	//define all of the status that you want here
 	let statuses = [
@@ -41,6 +42,11 @@
 			'icon': iconComplete,
 			'color': '#000000'
 		},
+		{
+			'title': 'Archive',
+			'icon': iconArchive,
+			'color': '#757575'
+		}
 	];
 
 	let showDialog = false; // confirmation dialog visibility
