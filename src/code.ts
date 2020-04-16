@@ -2,7 +2,6 @@
 let uiWidth = 184 // default ui width
 let uiHeight = 210; // default ui height
 let spacing = 8; // spacing of annotations from top of frame
-let page = figma.currentPage;
 let updateCount = 0;
 let removeCount = 0;
 
@@ -55,7 +54,7 @@ function getTopLevelNodes(nodes) {
 	let topLevelNodesInSelection = [];
 	if (nodes) {
 		nodes.forEach(node => {
-			if (node.parent === page) {
+			if (node.parent === figma.currentPage) {
 				if (node.type === 'COMPONENT' || node.type === 'FRAME' || node.type === 'INSTANCE' || node.type === 'GROUP') {
 					topLevelNodesInSelection.push(node);
 					console.log(topLevelNodesInSelection)
@@ -132,7 +131,7 @@ async function createAnnotations(status) {
 		//group the frame and put it into an array
 		let itemsToGroup = [];
 		itemsToGroup.push(annotionFrame);
-		let annotation = figma.group(itemsToGroup, page);
+		let annotation = figma.group(itemsToGroup, figma.currentPage);
 		annotation.name = status.title;
 
 		//create the inner shadow
@@ -175,14 +174,14 @@ async function createAnnotations(status) {
 			statusAnnotation.setPluginData('frameId',nodeId);
 
 			//add to group with annotations or create one
-			let annotationGroup = page.findOne(x => x.type === 'GROUP' && x.name === 'status_annotations') as GroupNode;
+			let annotationGroup = figma.currentPage.findOne(x => x.type === 'GROUP' && x.name === 'status_annotations') as GroupNode;
 			if (annotationGroup) {
 				annotationGroup.appendChild(statusAnnotation);
 				annotationGroup.parent.insertChild(0, annotationGroup);
 			} else {
 				let annotationsToGroup = [];
 				annotationsToGroup.push(statusAnnotation);
-				let newAnnotationGroup = figma.group(annotationsToGroup, page);
+				let newAnnotationGroup = figma.group(annotationsToGroup, figma.currentPage);
 				newAnnotationGroup.name = 'status_annotations';
 				newAnnotationGroup.locked = true;
 				newAnnotationGroup.expanded = false;
@@ -196,7 +195,7 @@ async function createAnnotations(status) {
 			node.setSharedPluginData('statusannotations', 'status', status.title);
 
 			//add plugin relaunch data to the page
-			page.setRelaunchData({ refresh: '' });
+			figma.currentPage.setRelaunchData({ refresh: '' });
 
 			//increase the counter
 			count++;
@@ -231,7 +230,7 @@ function deleteSelected() {
 
 //clear all annotations
 function deleteAll() {
-	let annotationGroup = page.findOne(x => x.type === 'GROUP' && x.name === 'status_annotations') as GroupNode;
+	let annotationGroup = figma.currentPage.findOne(x => x.type === 'GROUP' && x.name === 'status_annotations') as GroupNode;
 	
 	if (annotationGroup) {
 		annotationGroup.remove();
@@ -246,7 +245,7 @@ function deleteAll() {
 	})
 
 	//remove the plugin relaunch button
-	page.setRelaunchData({ });
+	figma.currentPage.setRelaunchData({ });
 
 	//notify the user
 	figma.notify('All annotations removed');
@@ -256,7 +255,7 @@ function deleteAll() {
 function removeStatus(frame) {
 
 	let targetId = frame.id;
-	let annotationGroup = page.findOne(x => x.type === 'GROUP' && x.name === 'status_annotations') as GroupNode;
+	let annotationGroup = figma.currentPage.findOne(x => x.type === 'GROUP' && x.name === 'status_annotations') as GroupNode;
 
 	//remove shared plugin data`
 	frame.setSharedPluginData('statusannotations', 'status', '');
@@ -274,7 +273,7 @@ function removeStatus(frame) {
 
 //this function removes unused annotations and also updates the position
 function cleanUp() {
-	let annotationGroup = page.findOne(x => x.type === 'GROUP' && x.name === 'status_annotations') as GroupNode;
+	let annotationGroup = figma.currentPage.findOne(x => x.type === 'GROUP' && x.name === 'status_annotations') as GroupNode;
 	if (annotationGroup) {
 		annotationGroup.children.forEach(annotation => {
 			let refId = annotation.getPluginData('frameId');
