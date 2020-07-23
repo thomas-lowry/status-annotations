@@ -57,7 +57,6 @@ function getTopLevelNodes(nodes) {
 			if (node.parent === figma.currentPage) {
 				if (node.type === 'COMPONENT' || node.type === 'FRAME' || node.type === 'INSTANCE' || node.type === 'GROUP') {
 					topLevelNodesInSelection.push(node);
-					console.log(topLevelNodesInSelection)
 				}
 			}
 		});
@@ -142,6 +141,7 @@ async function createAnnotations(status) {
 			color: innerShadowColor,
 			offset: {x: 0, y: -2},
 			radius: 0,
+			spread: 0,
 			type: 'INNER_SHADOW',
 			visible: true
 		}];
