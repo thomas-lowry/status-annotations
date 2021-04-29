@@ -55,7 +55,7 @@ function getTopLevelNodes(nodes) {
 	if (nodes) {
 		nodes.forEach(node => {
 			if (node.parent === figma.currentPage) {
-				if (node.type === 'COMPONENT' || node.type === 'FRAME' || node.type === 'INSTANCE' || node.type === 'GROUP') {
+				if (node.type === 'COMPONENT' || node.type ==='COMPONENT_SET' || node.type === 'FRAME' || node.type === 'INSTANCE' || node.type === 'GROUP') {
 					topLevelNodesInSelection.push(node);
 				}
 			}
@@ -185,7 +185,8 @@ async function createAnnotations(status) {
 				newAnnotationGroup.name = 'status_annotations';
 				newAnnotationGroup.locked = true;
 				newAnnotationGroup.expanded = false;
-				newAnnotationGroup.parent.insertChild(0, newAnnotationGroup);
+				newAnnotationGroup.parent.insertChild(newAnnotationGroup.parent.children.length, newAnnotationGroup);
+				console.log('hello');
 			}
 
 			//set plugin relaunch data
@@ -302,7 +303,7 @@ function cleanUp() {
 		}
 
 		//move the annotations to the bottom
-		annotationGroup.parent.insertChild(0, annotationGroup);
+		annotationGroup.parent.insertChild(annotationGroup.parent.children.length, annotationGroup);
 	}
 	updateCount = 0;
 }
