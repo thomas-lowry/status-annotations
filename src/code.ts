@@ -1,7 +1,7 @@
 //vars
-let uiWidth = 184 // default ui width
+let uiWidth = 184; // default ui width
 let uiHeight = 210; // default ui height
-let spacing = 8; // spacing of annotations from top of frame
+// let spacing = 8; // spacing of annotations from top of frame
 let updateCount = 0;
 let removeCount = 0;
 
@@ -12,42 +12,35 @@ if (figma.command === 'refresh') {
 	figma.closePlugin();
 } else {
 	//show the UI of the plugin
-	figma.showUI(__html__, {width: uiWidth, height: uiHeight });
+	figma.showUI(__html__, { width: uiWidth, height: uiHeight });
 }
 
 //recieves msgs from the UI
 figma.ui.onmessage = msg => {
-
-	switch(msg.type){
-
+	switch (msg.type) {
 		case 'height':
 			uiHeight = msg.height;
 			figma.ui.resize(uiWidth, uiHeight);
-		break;
+			break;
 
 		case 'addStatus':
-			let status:object = msg.status;
+			let status: object = msg.status;
 			createAnnotations(status);
-		break;
+			break;
 
 		case 'delete':
 			deleteSelected();
-		break;
+			break;
 
 		case 'deleteAll':
 			deleteAll();
-		break;
+			break;
 
 		case 'refresh':
 			cleanUp();
-		break;
-
-	} 
-
+			break;
+	}
 };
-
-
-
 
 //function to get frames within the selection
 function getTopLevelNodes(nodes) {
@@ -55,7 +48,13 @@ function getTopLevelNodes(nodes) {
 	if (nodes) {
 		nodes.forEach(node => {
 			if (node.parent === figma.currentPage) {
-				if (node.type === 'COMPONENT' || node.type ==='COMPONENT_SET' || node.type === 'FRAME' || node.type === 'INSTANCE' || node.type === 'GROUP') {
+				if (
+					node.type === 'COMPONENT' ||
+					node.type === 'COMPONENT_SET' ||
+					node.type === 'FRAME' ||
+					node.type === 'INSTANCE' ||
+					node.type === 'GROUP'
+				) {
 					topLevelNodesInSelection.push(node);
 				}
 			}
@@ -66,66 +65,77 @@ function getTopLevelNodes(nodes) {
 
 //create specified annotation
 async function createAnnotations(status) {
-
-	let selection:SceneNode[] = getTopLevelNodes(figma.currentPage.selection);
+	let selection: SceneNode[] = getTopLevelNodes(figma.currentPage.selection);
 
 	if (selection.length !== 0) {
-
 		//counter
 		let count = 0;
 
-		//create the frame with auto layout
+		//create the frame with
 		let annotionFrame = figma.createFrame();
-		annotionFrame.counterAxisSizingMode = 'AUTO';
-		annotionFrame.layoutMode = 'HORIZONTAL';
-		annotionFrame.itemSpacing = 4;
-		annotionFrame.horizontalPadding = 6;
-		annotionFrame.verticalPadding = 4;
+		annotionFrame.layoutMode = 'VERTICAL';
+		annotionFrame.itemSpacing = 10;
+		annotionFrame.horizontalPadding = 8;
+		annotionFrame.verticalPadding = 8;
 		annotionFrame.name = 'annotation';
-		annotionFrame.topLeftRadius = 3;
-		annotionFrame.topRightRadius = 3;
-
-		//style the stroke
-		annotionFrame.strokes = [{
-			type: 'SOLID',
-			visible: true,
-			opacity: 1,
-			blendMode: 'NORMAL',
-			color: hexToFigmaRgb('#DBDBDB')
-		}];
-		annotionFrame.strokeWeight = 1;
-		
-
-		//create and style the text node
-		let text = figma.createText();
-		text.name = status.title;
+		annotionFrame.topLeftRadius = 8;
+		annotionFrame.bottomLeftRadius = 8;
+		annotionFrame.fills = [
+			{
+				type: 'SOLID',
+				color: hexToFigmaRgb(status.color),
+			},
+		];
+		annotionFrame.resize(32, 180);
 
 		//define and load the font
 		let fontName = {
-			'family': 'Inter',
-			'style': 'Regular'
-		}
+			family: 'Noto Sans KR',
+			style: 'Bold',
+		};
 		await figma.loadFontAsync(fontName);
 
-		//apply the font properties to the text node
-		text.fontName = fontName;
-		text.fontSize = 12;
-		text.lineHeight = {
-			'value': 16,
-			'unit': 'PIXELS'
+		// create the frame with vertical text
+		const textFrame = figma.createFrame();
+		textFrame.layoutMode = 'VERTICAL';
+		textFrame.itemSpacing = 0;
+		textFrame.fills = [
+			{
+				type: 'SOLID',
+				color: hexToFigmaRgb(status.color),
+			},
+		];
+
+		for (let i = 0; i < status.title.length; i++) {
+			const text = figma.createText();
+			text.name = status.title.charAt(i);
+			//apply the font properties to the text node
+			text.fontName = fontName;
+			text.fontSize = 18;
+			text.lineHeight = {
+				unit: 'PIXELS',
+				value: 19,
+			};
+			text.fills = [
+				{
+					type: 'SOLID',
+					color: hexToFigmaRgb('#ffffff'),
+				},
+			];
+			//add text to the text node
+			text.characters = status.title.charAt(i);
+
+			textFrame.insertChild(i, text);
 		}
 
-		//add text to the text node
-		text.characters = status.title;
-
 		//create the icon
-		let icon = figma.createNodeFromSvg(status.icon);
+		let icon = figma.createNodeFromSvg(status.iconWhite);
 		icon.name = 'icon-' + status.slug;
 		icon.layoutAlign = 'CENTER';
 
 		//add icon and text to annotation
-		annotionFrame.insertChild(0,text);
-		annotionFrame.insertChild(1,icon);
+		annotionFrame.insertChild(0, icon);
+		annotionFrame.insertChild(1, textFrame);
 
 		//group the frame and put it into an array
 		let itemsToGroup = [];
@@ -133,27 +143,13 @@ async function createAnnotations(status) {
 		let annotation = figma.group(itemsToGroup, figma.currentPage);
 		annotation.name = status.title;
 
-		//create the inner shadow
-		let innerShadowColor = hexToFigmaRgb(status.color);
-		innerShadowColor = Object.assign({a: 1.0}, innerShadowColor);
-		annotation.effects = [{
-			blendMode: 'NORMAL',
-			color: innerShadowColor,
-			offset: {x: 0, y: -2},
-			radius: 0,
-			spread: 0,
-			type: 'INNER_SHADOW',
-			visible: true
-		}];
-
 		//loop through each frame
 		selection.forEach(node => {
-
 			let statusAnnotation;
 
 			//remove existing status if there is one
 			removeStatus(node);
-			
+
 			//check to see if first annotation
 			if (count === 0) {
 				statusAnnotation = annotation;
@@ -162,16 +158,16 @@ async function createAnnotations(status) {
 			}
 
 			//get the frame id
-			let nodeId:string = node.id;
+			let nodeId: string = node.id;
 
 			//set the position of the annotation
-			let y = node.y - statusAnnotation.height - spacing;
-			let x = (node.x + node.width) - statusAnnotation.width;
+			let y = node.y;
+			let x = node.x - statusAnnotation.width;
 			statusAnnotation.x = x;
 			statusAnnotation.y = y;
 
 			//add meta data to the annotation
-			statusAnnotation.setPluginData('frameId',nodeId);
+			statusAnnotation.setPluginData('frameId', nodeId);
 
 			//add to group with annotations or create one
 			let annotationGroup = figma.currentPage.findOne(x => x.type === 'GROUP' && x.name === 'status_annotations') as GroupNode;
@@ -201,7 +197,6 @@ async function createAnnotations(status) {
 			//increase the counter
 			count++;
 		});
-
 	} else {
 		figma.notify('Please select a top level frame, component, or group');
 	}
@@ -209,22 +204,21 @@ async function createAnnotations(status) {
 
 //clears the status on selected frames
 function deleteSelected() {
-	let selection:SceneNode[] = getTopLevelNodes(figma.currentPage.selection);
+	let selection: SceneNode[] = getTopLevelNodes(figma.currentPage.selection);
 	if (selection.length !== 0) {
 		selection.forEach(node => {
 			removeStatus(node);
 			if (node.type != 'INSTANCE') {
-				node.setRelaunchData({ });
+				node.setRelaunchData({});
 			}
 		});
 		if (removeCount === 1) {
-			figma.notify('1 annotation removed')
+			figma.notify('1 annotation removed');
 		} else if (removeCount > 1) {
-			figma.notify(removeCount + ' annotations removed')
+			figma.notify(removeCount + ' annotations removed');
 		}
-
 	} else {
-		figma.notify('Please select a frame, component, or group with a status')
+		figma.notify('Please select a frame, component, or group with a status');
 	}
 	removeCount = 0;
 }
@@ -232,21 +226,21 @@ function deleteSelected() {
 //clear all annotations
 function deleteAll() {
 	let annotationGroup = figma.currentPage.findOne(x => x.type === 'GROUP' && x.name === 'status_annotations') as GroupNode;
-	
+
 	if (annotationGroup) {
 		annotationGroup.remove();
 	}
 
 	//need to make this more performant
-	let topLevelNodes:SceneNode[] = getTopLevelNodes(figma.currentPage.children);
+	let topLevelNodes: SceneNode[] = getTopLevelNodes(figma.currentPage.children);
 	topLevelNodes.forEach(node => {
 		if (node.type != 'INSTANCE') {
-			node.setRelaunchData({ });
+			node.setRelaunchData({});
 		}
-	})
+	});
 
 	//remove the plugin relaunch button
-	figma.currentPage.setRelaunchData({ });
+	figma.currentPage.setRelaunchData({});
 
 	//notify the user
 	figma.notify('All annotations removed');
@@ -254,7 +248,6 @@ function deleteAll() {
 
 //remove the status msg from a frame
 function removeStatus(frame) {
-
 	let targetId = frame.id;
 	let annotationGroup = figma.currentPage.findOne(x => x.type === 'GROUP' && x.name === 'status_annotations') as GroupNode;
 
@@ -268,7 +261,7 @@ function removeStatus(frame) {
 				annotation.remove();
 				removeCount++;
 			}
-		})
+		});
 	}
 }
 
@@ -280,26 +273,26 @@ function cleanUp() {
 			let refId = annotation.getPluginData('frameId');
 			let node = figma.getNodeById(refId) as SceneNode;
 			if (node) {
-				let y = node.y - annotation.height - spacing;
-				let x = (node.x + node.width) - annotation.width;
+				let y = node.y;
+				let x = node.x - annotation.width;
 
 				if (annotation.x != x && annotation.y != y) {
-					updateCount++
+					updateCount++;
 				}
 
 				annotation.x = x;
 				annotation.y = y;
 			} else {
 				annotation.remove();
-				updateCount++
+				updateCount++;
 			}
 		});
 
 		//talk to the user
 		if (updateCount === 1) {
-			figma.notify('1 annotation updated')
+			figma.notify('1 annotation updated');
 		} else if (updateCount > 1) {
-			figma.notify(updateCount + ' annotations updated')
+			figma.notify(updateCount + ' annotations updated');
 		}
 
 		//move the annotations to the bottom
@@ -311,11 +304,13 @@ function cleanUp() {
 //Helper Functions
 
 //hex to figma color system
-function hexToFigmaRgb(hex:string) {
+function hexToFigmaRgb(hex: string) {
 	let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-	return result ? {
-	  r: (parseInt(result[1], 16))/255,
-	  g: (parseInt(result[2], 16))/255,
-	  b: (parseInt(result[3], 16))/255
-	} : null;
+	return result
+		? {
+				r: parseInt(result[1], 16) / 255,
+				g: parseInt(result[2], 16) / 255,
+				b: parseInt(result[3], 16) / 255,
+		  }
+		: null;
 }
