@@ -8,43 +8,44 @@
 	import StatusButton from './components/StatusButton';
 
 	//import all of your svg icons here (12x12 size)
-    import iconInProgress from './assets/icon-progress.svg';
-    import iconReview from './assets/icon-review.svg';
-    import iconApproved from './assets/icon-approved.svg';
-    import iconDevelop from './assets/icon-develop.svg';
+  import iconInProgress from './assets/icon-progress.svg';
+  import iconApproved from './assets/icon-approved.svg';
 	import iconComplete from './assets/icon-complete.svg';
 	import iconArchive from './assets/icon-archive.svg';
+	//import all of your svg icons here (12x12 size)
+  import iconInProgressWhite from './assets/icon-progress-white.svg';
+  import iconApprovedWhite from './assets/icon-approved-white.svg';
+	import iconCompleteWhite from './assets/icon-complete-white.svg';
+	import iconArchiveWhite from './assets/icon-archive-white.svg';
 	
 	//define all of the status that you want here
 	let statuses = [
 		{
-			'title': 'In progress',
+			'key': 'InProgress',
+			'title': '디자인중',
 			'icon': iconInProgress,
+			'iconWhite': iconInProgressWhite,
 			'color': '#E93940'
 		},
 		{
-			'title': 'Review',
-			'icon': iconReview,
-			'color': '#FFCF23'
-		},
-		{
-			'title': 'Approved',
+			'key': 'Approved',
+			'title': '확정됨',
 			'icon': iconApproved,
+			'iconWhite': iconApprovedWhite,
 			'color': '#376FFF'
 		},
 		{
-			'title': 'Develop',
-			'icon': iconDevelop,
-			'color': '#3CCC65'
-		},
-		{
-			'title': 'Complete',
+			'key': 'Complete',
+			'title': '상용배포됨',
 			'icon': iconComplete,
+			'iconWhite': iconCompleteWhite,
 			'color': '#000000'
 		},
 		{
-			'title': 'Archive',
+			'key': 'Archive',
+			'title': '구버전',
 			'icon': iconArchive,
+			'iconWhite': iconArchiveWhite,
 			'color': '#757575'
 		}
 	];
