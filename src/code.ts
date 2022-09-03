@@ -12,7 +12,7 @@ if (figma.command === 'refresh') {
 	figma.closePlugin();
 } else {
 	//show the UI of the plugin
-	figma.showUI(__html__, {width: uiWidth, height: uiHeight });
+	figma.showUI(__html__, {themeColors: true, width: uiWidth, height: uiHeight });
 }
 
 //recieves msgs from the UI
@@ -78,9 +78,13 @@ async function createAnnotations(status) {
 		let annotionFrame = figma.createFrame();
 		annotionFrame.counterAxisSizingMode = 'AUTO';
 		annotionFrame.layoutMode = 'HORIZONTAL';
-		annotionFrame.itemSpacing = 4;
-		annotionFrame.horizontalPadding = 6;
-		annotionFrame.verticalPadding = 4;
+		annotionFrame.counterAxisAlignItems = "CENTER";
+		annotionFrame.counterAxisSizingMode = "AUTO";
+		annotionFrame.primaryAxisAlignItems = "CENTER";
+		annotionFrame.primaryAxisSizingMode = "AUTO";
+		annotionFrame.itemSpacing = 8;
+		annotionFrame.horizontalPadding = 8;
+		annotionFrame.verticalPadding = 8;
 		annotionFrame.name = 'annotation';
 		annotionFrame.topLeftRadius = 3;
 		annotionFrame.topRightRadius = 3;
@@ -109,9 +113,9 @@ async function createAnnotations(status) {
 
 		//apply the font properties to the text node
 		text.fontName = fontName;
-		text.fontSize = 12;
+		text.fontSize = 16;
 		text.lineHeight = {
-			'value': 16,
+			'value': 20,
 			'unit': 'PIXELS'
 		}
 
@@ -289,6 +293,7 @@ function cleanUp() {
 
 				annotation.x = x;
 				annotation.y = y;
+
 			} else {
 				annotation.remove();
 				updateCount++

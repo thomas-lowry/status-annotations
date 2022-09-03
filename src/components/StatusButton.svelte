@@ -14,7 +14,7 @@
 
 <button on:click on:submit|preventDefault class="{className}">
     <div class="accent" style="background-color: {color}"></div>
-    <div class="icon ml-xsmall mr-xxsmall">
+    <div class="icon ml-xsmall mr-xsmall">
         {@html icon}
     </div>
     <Type><slot /></Type>
@@ -30,12 +30,12 @@ button {
     align-items: center;
     outline: none;
     border: none;
-    background-color: var(--white);
+    background-color: var(--figma-color-bg);
     width: 100%;
     padding: 0;
 }
 button:hover {
-    background-color: var(--grey);
+    background-color: var(--figma-color-bg-hover);
 }
 
 button:hover .accent {
@@ -43,7 +43,7 @@ button:hover .accent {
 }
 
 button:active {
-    background-color: var(--selection-a);
+    background-color: var(--figma-color-bg-selected);
 }
 
 .accent {

@@ -132,7 +132,7 @@
 
 .annotation-buttons {
 	padding: 4px 0 4px 0;
-	border-bottom: 1px solid var(--black1);
+	border-bottom: 1px solid var(--figma-color-border);
 }
 
 .clear {
@@ -146,11 +146,11 @@
 	width: 100%;
 	height: 100%;
 	z-index: 100;
-	background-color: var(--white);
+	background-color: var(--figma-color-bg);
 	transition-property: top;
 	transition-timing-function: ease-in-out;
 	transition-duration: 300ms;
-	border-top: 1px solid var(--black3);
+	border-top: 1px solid var(--figma-color-border);
 }
 .confirmation--msg {
 	flex: 1;
